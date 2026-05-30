@@ -431,9 +431,66 @@ body {
 .hist-to    { color: var(--teal); font-weight: 700; margin-left: auto; }
 
 /* ============================================================
+   Header — two-row layout
+   ============================================================ */
+.app-header {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 8px;
+  padding-bottom: 10px !important;
+}
+
+.header-top {
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+/* ── Language picker ── */
+.lang-row {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.lang-btn {
+  display: flex; align-items: center; gap: 3px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: .68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  letter-spacing: .02em;
+}
+
+.lang-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+.lang-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.lang-flag { font-size: .85rem; }
+.lang-code { font-size: .68rem; }
+
+/* Hide flag on very small screens */
+@media (max-width: 360px) {
+  .lang-flag { display: none; }
+}
+
+/* ============================================================
    Header right side (uses-left badge)
    ============================================================ */
-.header-right { display: flex; align-items: center; gap: 10px; }
 
 .uses-badge {
   font-size: .72rem;
@@ -549,6 +606,90 @@ body {
 .cooldown-btn:hover { transform: translateY(-2px); }
 
 /* ============================================================
+   Drag-to-reorder tabs
+   ============================================================ */
+.cat-tab { cursor: grab; user-select: none; }
+.cat-tab:active { cursor: grabbing; }
+.cat-tab.dragging { opacity: .3; transform: scale(.95); }
+
+/* ============================================================
+   Favorites grid view (when Favorites tab is selected)
+   ============================================================ */
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.fav-card {
+  display: flex;
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+}
+.fav-card:hover { border-color: var(--accent); box-shadow: 0 2px 10px rgba(14,165,233,.12); }
+
+.fav-card-main {
+  flex: 1;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 10px;
+  background: var(--bg);
+  cursor: pointer; text-align: left;
+  transition: background .2s;
+  min-width: 0;
+}
+.fav-card-main:hover { background: var(--accent-light); }
+
+.fav-card-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+.fav-card-info {
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 0;
+}
+
+.fav-card-cat {
+  font-size: .65rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-muted);
+}
+
+.fav-card-units {
+  font-size: .9rem; font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.fav-card-del {
+  width: 34px; flex-shrink: 0;
+  background: var(--danger-light);
+  border: none;
+  border-left: 1px solid var(--card-border);
+  color: var(--danger);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.fav-card-del:hover { background: var(--danger); color: #fff; }
+
+/* Favorites empty state */
+.favorites-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 180px;
+  gap: 12px;
+}
+
+.empty-icon { font-size: 3rem; opacity: .5; }
+
+.empty-text {
+  color: var(--text-muted);
+  text-align: center;
+  font-size: .9rem; line-height: 1.6;
+  max-width: 260px;
+}
+
+/* ============================================================
    Ad Banner Placeholders & Containers
    ============================================================ */
 .ad-placeholder {
@@ -602,7 +743,8 @@ body {
   .app-main { padding: 16px 10px 28px; gap: 14px; }
   .converter-card { padding: 16px 14px; }
   .app-title { font-size: 1.05rem; }
-  .cat-tab { padding: 8px 12px; }
+  .cat-tab { padding: 8px 10px; }
+  .favorites-grid { grid-template-columns: 1fr; }
 
   /* Stack converter vertically on mobile */
   .converter-grid {
