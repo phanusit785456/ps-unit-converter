@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
+
+  <!-- Calculator body (white card) -->
+  <rect x="7" y="5" width="18" height="22" rx="2.5" fill="white" opacity="0.95"/>
+
+  <!-- Display screen -->
+  <rect x="9" y="7" width="14" height="5.5" rx="1.5" fill="#0ea5e9"/>
+  <!-- Display number hint -->
+  <rect x="15" y="8.5" width="6" height="1.5" rx="0.75" fill="white" opacity="0.9"/>
+  <rect x="19" y="10.5" width="2.5" height="1" rx="0.5" fill="white" opacity="0.6"/>
+
+  <!-- Button row 1 -->
+  <rect x="9" y="14.5" width="4" height="3" rx="1" fill="#e2e8f0"/>
+  <rect x="14" y="14.5" width="4" height="3" rx="1" fill="#e2e8f0"/>
+  <rect x="19" y="14.5" width="4" height="3" rx="1" fill="#fb923c"/>
+
+  <!-- Button row 2 -->
+  <rect x="9" y="18.5" width="4" height="3" rx="1" fill="#e2e8f0"/>
+  <rect x="14" y="18.5" width="4" height="3" rx="1" fill="#e2e8f0"/>
+  <rect x="19" y="18.5" width="4" height="3" rx="1" fill="#e2e8f0"/>
+
+  <!-- Button row 3 — 0 wide + = button -->
+  <rect x="9" y="22.5" width="9" height="3" rx="1" fill="#cbd5e1"/>
+  <rect x="19" y="22.5" width="4" height="3" rx="1" fill="#0ea5e9"/>
+</svg>
