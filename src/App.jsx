@@ -1,29 +1,88 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { CATEGORIES, UNITS, convert, formatResult, getFormula, getUnitAbbr } from './converters'
+import AdBanner from './AdBanner'
 import './App.css'
 
-const MAX_HISTORY = 10
+const MAX_HISTORY   = 10
 const MAX_FAVORITES = 8
+const CONV_LIMIT    = 5
+const COOLDOWN_MS   = 60_000
 
 function loadStorage(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback }
   catch { return fallback }
 }
 
+// ── Cooldown Modal ────────────────────────────────────────────────
+function CooldownModal({ cooldownUntil, onDismiss }) {
+  const [timeLeft, setTimeLeft] = useState(() => Math.max(0, cooldownUntil - Date.now()))
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTimeLeft(Math.max(0, cooldownUntil - Date.now()))
+    }, 200)
+    return () => clearInterval(id)
+  }, [cooldownUntil])
+
+  const seconds  = Math.ceil(timeLeft / 1000)
+  const progress = (timeLeft / COOLDOWN_MS) * 100
+  const done     = timeLeft === 0
+
+  return (
+    <div className="cooldown-overlay" onKeyDown={e => e.stopPropagation()}>
+      <div className="cooldown-card">
+        <div className="cooldown-icon">🕐</div>
+        <h2 className="cooldown-title">Slow down!</h2>
+        <p className="cooldown-desc">
+          You've made <strong>{CONV_LIMIT} conversions</strong>.<br />
+          Please wait a moment before continuing.
+        </p>
+
+        {/* Ad inside the modal — prime placement while user waits */}
+        <AdBanner slot="1234567890" className="ad-cooldown" />
+
+        {!done ? (
+          <>
+            <div className="cooldown-timer">{seconds}s</div>
+            <div className="cooldown-bar-track">
+              <div className="cooldown-bar-fill" style={{ width: `${progress}%` }} />
+            </div>
+            <p className="cooldown-sub">Resume in {seconds} second{seconds !== 1 ? 's' : ''}…</p>
+          </>
+        ) : (
+          <button className="cooldown-btn" onClick={onDismiss}>
+            ✓ Continue for free
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Main App ──────────────────────────────────────────────────────
 export default function App() {
   const [darkMode, setDarkMode] = useState(() =>
     loadStorage('uc_dark', window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false)
   )
   const [category, setCategory] = useState('weight')
   const [fromUnit, setFromUnit] = useState('kg')
-  const [toUnit, setToUnit]     = useState('lb')
+  const [toUnit,   setToUnit]   = useState('lb')
   const [inputValue, setInputValue] = useState('')
-  const [result, setResult]         = useState('')
-  const [copied, setCopied]         = useState(false)
-  const [history, setHistory]       = useState(() => loadStorage('uc_history', []))
-  const [favorites, setFavorites]   = useState(() => loadStorage('uc_favorites', []))
+  const [result,     setResult]     = useState('')
+  const [copied,     setCopied]     = useState(false)
+  const [history,    setHistory]    = useState(() => loadStorage('uc_history',   []))
+  const [favorites,  setFavorites]  = useState(() => loadStorage('uc_favorites', []))
 
-  // Apply dark mode class to root
+  // Cooldown / conversion counting
+  const [convCount,     setConvCount]     = useState(() => parseInt(loadStorage('uc_conv_count', 0)))
+  const [cooldownUntil, setCooldownUntil] = useState(() => {
+    const stored = parseInt(localStorage.getItem('uc_cooldown_until') || '0')
+    return stored > Date.now() ? stored : 0
+  })
+
+  const cooldownActive = cooldownUntil > 0 && Date.now() < cooldownUntil
+
+  // Apply dark mode
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
     localStorage.setItem('uc_dark', JSON.stringify(darkMode))
@@ -31,6 +90,7 @@ export default function App() {
 
   useEffect(() => { localStorage.setItem('uc_history',   JSON.stringify(history))   }, [history])
   useEffect(() => { localStorage.setItem('uc_favorites', JSON.stringify(favorites)) }, [favorites])
+  useEffect(() => { localStorage.setItem('uc_conv_count', String(convCount))        }, [convCount])
 
   // Real-time conversion
   useEffect(() => {
@@ -39,17 +99,15 @@ export default function App() {
     setResult(converted === '' ? '' : String(converted))
   }, [inputValue, fromUnit, toUnit, category])
 
-  // Auto-add to history after 1.5s of inactivity
+  // After 1.5s of stable input: save history + count conversion
   useEffect(() => {
     if (!inputValue || result === '') return
     const timer = setTimeout(() => {
+      // Save history
       const entry = {
-        id: Date.now(),
-        category,
-        fromValue: inputValue,
-        fromUnit,
-        toValue: formatResult(result),
-        toUnit,
+        id: Date.now(), category,
+        fromValue: inputValue, fromUnit,
+        toValue: formatResult(result), toUnit,
       }
       setHistory(prev => {
         const deduped = prev.filter(h =>
@@ -58,9 +116,27 @@ export default function App() {
         )
         return [entry, ...deduped].slice(0, MAX_HISTORY)
       })
+
+      // Count conversion → trigger cooldown at limit
+      setConvCount(prev => {
+        const next = prev + 1
+        if (next >= CONV_LIMIT) {
+          const until = Date.now() + COOLDOWN_MS
+          setCooldownUntil(until)
+          localStorage.setItem('uc_cooldown_until', String(until))
+          localStorage.setItem('uc_conv_count', '0')
+          return 0
+        }
+        return next
+      })
     }, 1500)
     return () => clearTimeout(timer)
   }, [inputValue, fromUnit, toUnit, category, result])
+
+  const handleDismissCooldown = () => {
+    setCooldownUntil(0)
+    localStorage.setItem('uc_cooldown_until', '0')
+  }
 
   const handleCategoryChange = (cat) => {
     setCategory(cat)
@@ -120,23 +196,35 @@ export default function App() {
   }
 
   const isFavorite = favorites.some(f => f.key === `${category}:${fromUnit}:${toUnit}`)
-  const formula = getFormula(fromUnit, toUnit, category)
+  const formula    = getFormula(fromUnit, toUnit, category)
+  const usesLeft   = CONV_LIMIT - convCount
 
   return (
     <div className="app">
+      {cooldownActive && (
+        <CooldownModal cooldownUntil={cooldownUntil} onDismiss={handleDismissCooldown} />
+      )}
+
       {/* ── Header ── */}
       <header className="app-header">
         <div className="header-left">
           <span className="app-logo">🔄</span>
           <h1 className="app-title">Unit Converter</h1>
         </div>
-        <button
-          className="theme-toggle"
-          onClick={() => setDarkMode(d => !d)}
-          title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {darkMode ? '☀️' : '🌙'}
-        </button>
+        <div className="header-right">
+          {convCount > 0 && !cooldownActive && (
+            <span className="uses-badge" title="Free conversions remaining">
+              {usesLeft} left
+            </span>
+          )}
+          <button
+            className="theme-toggle"
+            onClick={() => setDarkMode(d => !d)}
+            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {darkMode ? '☀️' : '🌙'}
+          </button>
+        </div>
       </header>
 
       <main className="app-main">
@@ -156,6 +244,9 @@ export default function App() {
           ))}
         </div>
 
+        {/* ── Ad Banner — below tabs ── */}
+        <AdBanner slot="1111111111" className="ad-leaderboard" />
+
         {/* ── Converter Card ── */}
         <div className="converter-card">
           <div className="converter-grid">
@@ -169,12 +260,14 @@ export default function App() {
                 onChange={e => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Enter value…"
+                disabled={cooldownActive}
                 autoFocus
               />
               <select
                 className="unit-select"
                 value={fromUnit}
                 onChange={e => setFromUnit(e.target.value)}
+                disabled={cooldownActive}
               >
                 {UNITS[category].map(u => (
                   <option key={u.id} value={u.id}>{u.label}</option>
@@ -184,7 +277,13 @@ export default function App() {
 
             {/* Swap button */}
             <div className="swap-area">
-              <button className="swap-btn" onClick={handleSwap} title="Swap units" aria-label="Swap units">
+              <button
+                className="swap-btn"
+                onClick={handleSwap}
+                disabled={cooldownActive}
+                title="Swap units"
+                aria-label="Swap units"
+              >
                 ⇄
               </button>
             </div>
@@ -202,6 +301,7 @@ export default function App() {
                 className="unit-select"
                 value={toUnit}
                 onChange={e => setToUnit(e.target.value)}
+                disabled={cooldownActive}
               >
                 {UNITS[category].map(u => (
                   <option key={u.id} value={u.id}>{u.label}</option>
@@ -220,7 +320,7 @@ export default function App() {
 
           {/* Action buttons */}
           <div className="action-row">
-            <button className="action-btn swap-action" onClick={handleSwap}>🔁 Swap</button>
+            <button className="action-btn swap-action" onClick={handleSwap} disabled={cooldownActive}>🔁 Swap</button>
             <button className="action-btn clear-btn"   onClick={handleClear}>✕ Clear</button>
             <button
               className={`action-btn copy-btn${copied ? ' copied' : ''}`}
@@ -244,6 +344,9 @@ export default function App() {
             </p>
           )}
         </div>
+
+        {/* ── Ad Banner — between converter and favorites ── */}
+        <AdBanner slot="2222222222" className="ad-rectangle" />
 
         {/* ── Favorites ── */}
         {favorites.length > 0 && (
