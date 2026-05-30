@@ -1,23 +1,49 @@
 import { useState, useEffect, useRef } from 'react'
-import { CATEGORIES, UNITS, convert, formatResult, getFormula, getUnitAbbr } from './converters'
+import { CATEGORIES, UNITS, CATEGORY_GROUPS, convert, formatResult, getFormula, getUnitAbbr } from './converters'
 import { LANGS, TRANSLATIONS } from './translations'
+import {
+  TempIcon, WeightIcon, LengthIcon, VolumeIcon, CurrencyIcon,
+  StorageIcon, EnergyIcon, PressureIcon, ForceIcon,
+  VoltageIcon, CurrentIcon, ResistanceIcon, StarIcon,
+} from './Icons'
 import AdBanner from './AdBanner'
 import './App.css'
 
-const MAX_HISTORY  = 10
+const MAX_HISTORY   = 10
 const MAX_FAVORITES = 8
-const CONV_LIMIT   = 5
-const COOLDOWN_MS  = 60_000
+const CONV_LIMIT    = 5
+const COOLDOWN_MS   = 60_000
 
-const DEFAULT_TAB_ORDER = ['temperature', 'weight', 'length', 'volume', 'currency', 'favorites']
+const DEFAULT_TAB_ORDER = [
+  'temperature','weight','length','volume',
+  'digital_storage','energy','pressure','force',
+  'voltage','current','resistance','currency','favorites',
+]
+
 const TAB_META = {
-  temperature: { icon: '🌡️' },
-  weight:      { icon: '⚖️'  },
-  length:      { icon: '📏'  },
-  volume:      { icon: '🧪'  },
-  currency:    { icon: '💱'  },
-  favorites:   { icon: '⭐'  },
+  temperature:     { Icon: TempIcon       },
+  weight:          { Icon: WeightIcon     },
+  length:          { Icon: LengthIcon     },
+  volume:          { Icon: VolumeIcon     },
+  currency:        { Icon: CurrencyIcon   },
+  digital_storage: { Icon: StorageIcon    },
+  energy:          { Icon: EnergyIcon     },
+  pressure:        { Icon: PressureIcon   },
+  force:           { Icon: ForceIcon      },
+  voltage:         { Icon: VoltageIcon    },
+  current:         { Icon: CurrentIcon    },
+  resistance:      { Icon: ResistanceIcon },
+  favorites:       { Icon: StarIcon       },
 }
+
+const FILTER_GROUPS = [
+  { id: 'all',         labelKey: 'filterAll'         },
+  { id: 'measurement', labelKey: 'filterMeasurement' },
+  { id: 'electrical',  labelKey: 'filterElectrical'  },
+  { id: 'physics',     labelKey: 'filterPhysics'     },
+  { id: 'digital',     labelKey: 'filterDigital'     },
+  { id: 'finance',     labelKey: 'filterFinance'     },
+]
 
 function loadStorage(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback }
@@ -83,8 +109,7 @@ function CooldownModal({ cooldownUntil, onDismiss, t }) {
         <div className="cooldown-icon">🕐</div>
         <h2 className="cooldown-title">{t.slowDown}</h2>
         <p className="cooldown-desc">
-          <strong>{t.conversionsMade}</strong><br />
-          {t.pleaseWait}
+          <strong>{t.conversionsMade}</strong><br />{t.pleaseWait}
         </p>
         <AdBanner slot="1234567890" className="ad-cooldown" />
         {!done ? (
@@ -108,7 +133,7 @@ function FavoritesView({ favorites, setFavorites, loadFavorite, t }) {
   if (favorites.length === 0) {
     return (
       <div className="converter-card favorites-empty">
-        <div className="empty-icon">⭐</div>
+        <StarIcon size={40} />
         <p className="empty-text">{t.noFavorites}</p>
       </div>
     )
@@ -118,13 +143,11 @@ function FavoritesView({ favorites, setFavorites, loadFavorite, t }) {
       <div className="favorites-grid">
         {favorites.map(fav => {
           const cat = CATEGORIES.find(c => c.id === fav.category)
+          const { Icon } = TAB_META[fav.category] ?? {}
           return (
             <div key={fav.key} className="fav-card">
-              <button
-                className="fav-card-main"
-                onClick={() => loadFavorite(fav)}
-              >
-                <span className="fav-card-icon">{cat?.icon}</span>
+              <button className="fav-card-main" onClick={() => loadFavorite(fav)}>
+                {Icon && <Icon size={22} />}
                 <div className="fav-card-info">
                   <span className="fav-card-cat">{cat?.label}</span>
                   <span className="fav-card-units">
@@ -135,7 +158,7 @@ function FavoritesView({ favorites, setFavorites, loadFavorite, t }) {
               <button
                 className="fav-card-del"
                 onClick={() => setFavorites(prev => prev.filter(f => f.key !== fav.key))}
-                aria-label="Remove favorite"
+                aria-label="Remove"
               >×</button>
             </div>
           )
@@ -147,7 +170,6 @@ function FavoritesView({ favorites, setFavorites, loadFavorite, t }) {
 
 // ── Main App ──────────────────────────────────────────────────────
 export default function App() {
-  // Language — auto-detect browser lang, fallback to 'en'
   const [lang, setLang] = useState(() => {
     const stored = localStorage.getItem('uc_lang')
     if (stored && TRANSLATIONS[stored]) return stored
@@ -156,26 +178,24 @@ export default function App() {
   })
   const t = TRANSLATIONS[lang] ?? TRANSLATIONS.en
 
-  // Theme
   const [darkMode, setDarkMode] = useState(() =>
     loadStorage('uc_dark', window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false)
   )
 
-  // Tab order — persisted, 6 tabs including 'favorites'
   const [tabOrder, setTabOrder] = useState(() => {
     try {
       const s = JSON.parse(localStorage.getItem('uc_tab_order'))
-      if (Array.isArray(s) && s.length === 6) return s
+      if (Array.isArray(s) && s.length === DEFAULT_TAB_ORDER.length) return s
     } catch {}
     return DEFAULT_TAB_ORDER
   })
 
-  // Drag-to-reorder refs
+  const [activeFilter, setActiveFilter] = useState('all')
+
   const dragItem = useRef(null)
   const dragOver = useRef(null)
   const [draggingIdx, setDraggingIdx] = useState(null)
 
-  // Conversion state
   const [category,   setCategory]   = useState('weight')
   const [fromUnit,   setFromUnit]   = useState('kg')
   const [toUnit,     setToUnit]     = useState('lb')
@@ -185,7 +205,6 @@ export default function App() {
   const [history,    setHistory]    = useState(() => loadStorage('uc_history',   []))
   const [favorites,  setFavorites]  = useState(() => loadStorage('uc_favorites', []))
 
-  // Cooldown
   const [convCount,     setConvCount]     = useState(() => parseInt(loadStorage('uc_conv_count', 0)))
   const [cooldownUntil, setCooldownUntil] = useState(() => {
     const v = parseInt(localStorage.getItem('uc_cooldown_until') || '0')
@@ -193,24 +212,24 @@ export default function App() {
   })
   const cooldownActive = cooldownUntil > 0 && Date.now() < cooldownUntil
 
-  // ── Persist ──────────────────────────────────
+  // Persist
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
     localStorage.setItem('uc_dark', JSON.stringify(darkMode))
   }, [darkMode])
-  useEffect(() => { localStorage.setItem('uc_lang',       lang)                       }, [lang])
-  useEffect(() => { localStorage.setItem('uc_history',    JSON.stringify(history))    }, [history])
-  useEffect(() => { localStorage.setItem('uc_favorites',  JSON.stringify(favorites))  }, [favorites])
-  useEffect(() => { localStorage.setItem('uc_conv_count', String(convCount))          }, [convCount])
+  useEffect(() => { localStorage.setItem('uc_lang',       lang) }, [lang])
+  useEffect(() => { localStorage.setItem('uc_history',    JSON.stringify(history))   }, [history])
+  useEffect(() => { localStorage.setItem('uc_favorites',  JSON.stringify(favorites)) }, [favorites])
+  useEffect(() => { localStorage.setItem('uc_conv_count', String(convCount))         }, [convCount])
 
-  // ── Real-time conversion ──────────────────────
+  // Real-time conversion
   useEffect(() => {
     if (inputValue === '' || inputValue === '-') { setResult(''); return }
     const converted = convert(inputValue, fromUnit, toUnit, category)
     setResult(converted === '' ? '' : String(converted))
   }, [inputValue, fromUnit, toUnit, category])
 
-  // ── Debounced: save history + count conversion ──
+  // Debounced history + cooldown
   useEffect(() => {
     if (!inputValue || result === '' || category === 'favorites') return
     const timer = setTimeout(() => {
@@ -236,7 +255,7 @@ export default function App() {
     return () => clearTimeout(timer)
   }, [inputValue, fromUnit, toUnit, category, result])
 
-  // ── Drag handlers ─────────────────────────────
+  // Drag handlers
   const handleDragStart = (idx) => { dragItem.current = idx; setDraggingIdx(idx) }
   const handleDragEnter = (idx) => { dragOver.current = idx }
   const handleDragEnd   = () => {
@@ -251,7 +270,6 @@ export default function App() {
     setDraggingIdx(null)
   }
 
-  // ── Conversion handlers ───────────────────────
   const handleCategoryChange = (cat) => {
     setCategory(cat)
     if (cat !== 'favorites' && UNITS[cat]) {
@@ -273,10 +291,8 @@ export default function App() {
     if (!result) return
     const text = `${inputValue} ${getUnitAbbr(fromUnit, category)} = ${formatResult(result)} ${getUnitAbbr(toUnit, category)}`
     try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000) }
-    catch { /* clipboard not available */ }
+    catch { /* clipboard unavailable */ }
   }
-
-  const handleKeyDown = (e) => { if (e.key === 'Enter' && result !== '') handleCopy() }
 
   const toggleFavorite = () => {
     const key = `${category}:${fromUnit}:${toUnit}`
@@ -303,6 +319,9 @@ export default function App() {
     localStorage.setItem('uc_cooldown_until', '0')
   }
 
+  // Filtered visible tabs
+  const visibleTabs = tabOrder.filter(id => CATEGORY_GROUPS[activeFilter]?.includes(id))
+
   const isFavorite = category !== 'favorites' && favorites.some(f => f.key === `${category}:${fromUnit}:${toUnit}`)
   const formula    = category !== 'favorites' ? getFormula(fromUnit, toUnit, category) : ''
   const usesLeft   = CONV_LIMIT - convCount
@@ -324,6 +343,7 @@ export default function App() {
             {convCount > 0 && !cooldownActive && (
               <span className="uses-badge">{usesLeft} {t.usesLeft}</span>
             )}
+            <LangDropdown lang={lang} setLang={setLang} />
             <button
               className="theme-toggle"
               onClick={() => setDarkMode(d => !d)}
@@ -333,39 +353,51 @@ export default function App() {
             </button>
           </div>
         </div>
-
-        {/* Language dropdown */}
-        <div className="lang-row">
-          <LangDropdown lang={lang} setLang={setLang} />
-        </div>
       </header>
 
       <main className="app-main">
-        {/* ── Category Tabs — draggable ── */}
-        <div className="category-tabs" role="tablist" title={t.dragHint}>
-          {tabOrder.map((tabId, idx) => (
+        {/* ── Filter bar ── */}
+        <div className="filter-bar" role="toolbar" aria-label="Filter categories">
+          {FILTER_GROUPS.map(f => (
             <button
-              key={tabId}
-              role="tab"
-              aria-selected={category === tabId}
-              draggable
-              className={`cat-tab${category === tabId ? ' active' : ''}${draggingIdx === idx ? ' dragging' : ''}`}
-              onClick={() => handleCategoryChange(tabId)}
-              onDragStart={() => handleDragStart(idx)}
-              onDragEnter={() => handleDragEnter(idx)}
-              onDragEnd={handleDragEnd}
-              onDragOver={e => e.preventDefault()}
+              key={f.id}
+              className={`filter-chip${activeFilter === f.id ? ' active' : ''}`}
+              onClick={() => setActiveFilter(f.id)}
             >
-              <span className="cat-icon">{TAB_META[tabId]?.icon}</span>
-              <span className="cat-label">{t[tabId] ?? tabId}</span>
+              {t[f.labelKey]}
             </button>
           ))}
         </div>
 
-        {/* ── Ad Banner — below tabs ── */}
+        {/* ── Category Tabs ── */}
+        <div className="category-tabs" role="tablist" title={t.dragHint}>
+          {visibleTabs.map((tabId, idx) => {
+            const globalIdx = tabOrder.indexOf(tabId)
+            const { Icon } = TAB_META[tabId] ?? {}
+            return (
+              <button
+                key={tabId}
+                role="tab"
+                aria-selected={category === tabId}
+                draggable
+                className={`cat-tab${category === tabId ? ' active' : ''}${draggingIdx === globalIdx ? ' dragging' : ''}`}
+                onClick={() => handleCategoryChange(tabId)}
+                onDragStart={() => handleDragStart(globalIdx)}
+                onDragEnter={() => handleDragEnter(globalIdx)}
+                onDragEnd={handleDragEnd}
+                onDragOver={e => e.preventDefault()}
+              >
+                {Icon && <Icon size={18} />}
+                <span className="cat-label">{t[tabId] ?? tabId}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* ── Ad Banner ── */}
         <AdBanner slot="1111111111" className="ad-leaderboard" />
 
-        {/* ── Main content: Converter or Favorites view ── */}
+        {/* ── Main content ── */}
         {category === 'favorites' ? (
           <FavoritesView
             favorites={favorites}
@@ -376,7 +408,6 @@ export default function App() {
         ) : (
           <div className="converter-card">
             <div className="converter-grid">
-              {/* From */}
               <div className="converter-side">
                 <label className="side-label">{t.from}</label>
                 <input
@@ -384,7 +415,7 @@ export default function App() {
                   className="value-input"
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
+                  onKeyDown={e => e.key === 'Enter' && handleCopy()}
                   placeholder={t.enterValue}
                   disabled={cooldownActive}
                   autoFocus
@@ -399,12 +430,10 @@ export default function App() {
                 </select>
               </div>
 
-              {/* Swap button */}
               <div className="swap-area">
                 <button className="swap-btn" onClick={handleSwap} disabled={cooldownActive} title={t.swap}>⇄</button>
               </div>
 
-              {/* To */}
               <div className="converter-side">
                 <label className="side-label">{t.to}</label>
                 <div className="result-display" aria-live="polite">
@@ -444,7 +473,6 @@ export default function App() {
               <button
                 className={`action-btn fav-btn${isFavorite ? ' favorited' : ''}`}
                 onClick={toggleFavorite}
-                title={isFavorite ? 'Remove favorite' : 'Add favorite'}
               >
                 {isFavorite ? '★' : '☆'}
               </button>
@@ -463,12 +491,12 @@ export default function App() {
         {history.length > 0 && (
           <div className="section-card">
             <div className="section-header">
-              <h2 className="section-title">{t.recentTitle}</h2>
+              <h2 className="section-title">📜 {t.recentTitle}</h2>
               <button className="text-btn" onClick={() => setHistory([])}>{t.clearHistory}</button>
             </div>
             <div className="history-list">
               {history.map(entry => {
-                const cat = CATEGORIES.find(c => c.id === entry.category)
+                const { Icon } = TAB_META[entry.category] ?? {}
                 return (
                   <button key={entry.id} className="history-item" onClick={() => {
                     setCategory(entry.category)
@@ -476,7 +504,7 @@ export default function App() {
                     setToUnit(entry.toUnit)
                     setInputValue(entry.fromValue)
                   }}>
-                    <span className="hist-icon">{cat?.icon}</span>
+                    <span className="hist-icon">{Icon && <Icon size={16} />}</span>
                     <span className="hist-from">{entry.fromValue} {getUnitAbbr(entry.fromUnit, entry.category)}</span>
                     <span className="hist-arrow">→</span>
                     <span className="hist-to">{entry.toValue} {getUnitAbbr(entry.toUnit, entry.category)}</span>
@@ -491,7 +519,9 @@ export default function App() {
       <footer className="app-footer">
         {t.footer}
         <span className="footer-sep">·</span>
-        <a href="/privacy.html" className="footer-link">Privacy Policy</a>
+        <a href="/about.html"   className="footer-link">{t.about}</a>
+        <span className="footer-sep">·</span>
+        <a href="/privacy.html" className="footer-link">{t.privacy}</a>
       </footer>
     </div>
   )

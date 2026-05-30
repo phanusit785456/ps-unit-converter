@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — PS-Calculation</title>
+  <style>
+    :root { --accent:#0ea5e9; --teal:#14b8a6; --text:#0f172a; --muted:#64748b; --border:#e2e8f0; --bg:#f8fafc; --card:#fff; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+    .container{max-width:760px;margin:0 auto;padding:40px 20px 80px;}
+    header{border-bottom:1px solid var(--border);padding-bottom:24px;margin-bottom:36px;}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);margin-bottom:12px;}
+    .logo-icon{font-size:1.5rem;}
+    .logo-name{font-weight:800;font-size:1.1rem;background:linear-gradient(135deg,#0ea5e9,#14b8a6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    h1{font-size:1.75rem;font-weight:800;margin-bottom:6px;}
+    .sub{color:var(--muted);font-size:.95rem;}
+    h2{font-size:1.1rem;font-weight:700;margin:32px 0 10px;color:var(--accent);}
+    p{margin-bottom:12px;color:#334155;}
+    .group-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0;}
+    .group-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+    .group-title{font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:8px;}
+    .group-items{display:flex;flex-direction:column;gap:4px;}
+    .group-item{display:flex;align-items:center;gap:8px;font-size:.85rem;color:#334155;}
+    .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+    .highlight{background:#f0f9ff;border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:.9rem;}
+    .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.875rem;margin-top:40px;}
+    footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;text-align:center;}
+    footer a{color:var(--accent);}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="/" class="logo">
+        <span class="logo-icon">🔄</span>
+        <span class="logo-name">PS-Calculation</span>
+      </a>
+      <h1>About PS-Calculation</h1>
+      <p class="sub">A free, professional unit conversion platform</p>
+    </header>
+
+    <h2>What is PS-Calculation?</h2>
+    <p>PS-Calculation is a free online platform that provides fast, accurate unit conversions across science, engineering, everyday life, and digital computing — available in 6 languages with no installation required.</p>
+    <p>Our goal is to be the go-to calculation tool for students, engineers, scientists, and anyone who needs quick, reliable conversions on any device.</p>
+
+    <div class="highlight">
+      <strong>12 conversion categories · 6 languages · Works on mobile · No account needed</strong>
+    </div>
+
+    <h2>Conversion Categories</h2>
+    <div class="group-grid">
+      <div class="group-card">
+        <div class="group-title">Measurement</div>
+        <div class="group-items">
+          <div class="group-item"><span class="dot"></span>Temperature — °C, °F, K</div>
+          <div class="group-item"><span class="dot"></span>Weight — kg, lb, oz, g, ton</div>
+          <div class="group-item"><span class="dot"></span>Length — m, km, mile, inch, ft, cm</div>
+          <div class="group-item"><span class="dot"></span>Volume — L, mL, gallon, cup, fl oz</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="group-title">Electrical</div>
+        <div class="group-items">
+          <div class="group-item"><span class="dot"></span>Voltage — V, mV, kV, MV</div>
+          <div class="group-item"><span class="dot"></span>Current — A, mA, μA, kA</div>
+          <div class="group-item"><span class="dot"></span>Resistance — Ω, mΩ, kΩ, MΩ, GΩ</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="group-title">Energy &amp; Physics</div>
+        <div class="group-items">
+          <div class="group-item"><span class="dot"></span>Energy — J, kJ, cal, kcal, kWh, BTU</div>
+          <div class="group-item"><span class="dot"></span>Pressure — Pa, kPa, bar, psi, atm, mmHg</div>
+          <div class="group-item"><span class="dot"></span>Force — N, kN, lbf, dyne, kgf</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="group-title">Digital</div>
+        <div class="group-items">
+          <div class="group-item"><span class="dot"></span>Storage — B, KB, MB, GB, TB, PB</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="group-title">Finance</div>
+        <div class="group-items">
+          <div class="group-item"><span class="dot"></span>Currency — USD, THB, EUR, GBP, JPY, SGD, CNY, AUD</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Key Features</h2>
+    <p><strong>Real-time conversion</strong> — Results appear instantly as you type. No need to press a button.</p>
+    <p><strong>6 languages</strong> — Interface available in English, Thai, Chinese (Simplified), Hindi, Japanese, and Korean. Language is auto-detected from your browser.</p>
+    <p><strong>Favorites &amp; History</strong> — Save frequently used conversions as favorites for one-tap access. The last 10 conversions are stored locally in your browser.</p>
+    <p><strong>Customizable layout</strong> — Drag and drop category tabs to arrange them in the order you prefer. Your arrangement is saved across sessions.</p>
+    <p><strong>Dark &amp; Light mode</strong> — Automatically matches your system preference, or switch manually.</p>
+    <p><strong>No install required</strong> — Runs entirely in your browser. Works on mobile, tablet, and desktop.</p>
+
+    <h2>Privacy &amp; Data</h2>
+    <p>PS-Calculation does not collect or store any personal data on our servers. All preferences (history, favorites, language, theme) are stored locally on your device using browser localStorage. See our <a href="/privacy.html">Privacy Policy</a> for full details.</p>
+
+    <h2>Technology</h2>
+    <p>Built with <strong>React + Vite</strong> and deployed on <strong>Vercel</strong>. All conversions are performed client-side using scientifically accurate constants and exchange rates.</p>
+    <p>Currency exchange rates are approximate fixed values. For live rates, please consult a dedicated currency service.</p>
+
+    <a href="/" class="back-btn">← Open Unit Converter</a>
+
+    <footer>
+      &copy; 2026 PS-Calculation &nbsp;·&nbsp;
+      <a href="/">Unit Converter</a> &nbsp;·&nbsp;
+      <a href="/about.html">About</a> &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy Policy</a>
+    </footer>
+  </div>
+</body>
+</html>

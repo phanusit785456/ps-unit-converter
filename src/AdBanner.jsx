@@ -1,19 +1,21 @@
 import { useEffect, useRef } from 'react'
 
 const CLIENT = import.meta.env.VITE_ADSENSE_CLIENT
+const IS_PROD = import.meta.env.PROD
 
 export default function AdBanner({ slot, style, className = '' }) {
   const pushed = useRef(false)
 
   useEffect(() => {
-    if (!CLIENT || pushed.current) return
+    if (!IS_PROD || !CLIENT || pushed.current) return
     pushed.current = true
     try {
       ;(window.adsbygoogle = window.adsbygoogle || []).push({})
     } catch { /* already initialized */ }
   }, [])
 
-  if (!CLIENT) {
+  // In dev mode always show placeholder — AdSense JS interferes with layout in localhost
+  if (!CLIENT || !IS_PROD) {
     return (
       <div className={`ad-placeholder ${className}`} style={style}>
         <span>Advertisement</span>
