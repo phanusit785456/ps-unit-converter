@@ -24,6 +24,86 @@ function loadStorage(key, fallback) {
   catch { return fallback }
 }
 
+// ── Language Dropdown ─────────────────────────────────────────────
+function LangDropdown({ lang, setLang }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
+
+  const current = LANGS.find(l => l.code === lang) ?? LANGS[0]
+
+  return (
+    <div className="lang-dropdown" ref={ref}>
+      <button className="lang-trigger" onClick={() => setOpen(o => !o)} aria-label="Select language">
+        <span className="lang-flag">{current.flag}</span>
+        <span className="lang-code">{current.label}</span>
+        <span className={`lang-chevron${open ? ' open' : ''}`}>▾</span>
+      </button>
+      {open && (
+        <div className="lang-menu">
+          {LANGS.map(l => (
+            <button
+              key={l.code}
+              className={`lang-option${l.code === lang ? ' active' : ''}`}
+              onClick={() => { setLang(l.code); setOpen(false) }}
+            >
+              <span className="lang-flag">{l.flag}</span>
+              <span className="lang-name">{l.name}</span>
+              <span className="lang-code-sm">{l.label}</span>
+              {l.code === lang && <span className="lang-check">✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Donate Section ────────────────────────────────────────────────
+function DonateSection({ t }) {
+  return (
+    <div className="section-card donate-card">
+      <h2 className="section-title">{t.donateTitle}</h2>
+      <p className="donate-desc">{t.donateDesc}</p>
+      <div className="donate-buttons">
+        <a
+          href="https://ko-fi.com/YOUR_KOFI_USERNAME"
+          target="_blank" rel="noopener noreferrer"
+          className="donate-btn kofi-btn"
+        >
+          ☕ {t.donateKofi}
+        </a>
+        <a
+          href="https://www.buymeacoffee.com/YOUR_BMC_USERNAME"
+          target="_blank" rel="noopener noreferrer"
+          className="donate-btn bmc-btn"
+        >
+          🧋 {t.donateBmc}
+        </a>
+      </div>
+      <div className="promptpay-box">
+        <p className="promptpay-label">{t.donatePromptpay}</p>
+        <div className="promptpay-qr-wrap">
+          {/* Replace qr-placeholder.png with your real PromptPay QR image */}
+          <div className="promptpay-qr-placeholder">
+            <span>📷</span>
+            <small>Add your QR image here</small>
+          </div>
+          <div className="promptpay-info">
+            <span className="promptpay-number">0xx-xxx-xxxx</span>
+            <small className="promptpay-hint">{t.donatePromptpayNum}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Cooldown Modal ────────────────────────────────────────────────
 function CooldownModal({ cooldownUntil, onDismiss, t }) {
   const [timeLeft, setTimeLeft] = useState(() => Math.max(0, cooldownUntil - Date.now()))
@@ -294,19 +374,9 @@ export default function App() {
           </div>
         </div>
 
-        {/* Language picker row */}
+        {/* Language dropdown */}
         <div className="lang-row">
-          {LANGS.map(l => (
-            <button
-              key={l.code}
-              className={`lang-btn${lang === l.code ? ' active' : ''}`}
-              onClick={() => setLang(l.code)}
-              title={l.name}
-            >
-              <span className="lang-flag">{l.flag}</span>
-              <span className="lang-code">{l.label}</span>
-            </button>
-          ))}
+          <LangDropdown lang={lang} setLang={setLang} />
         </div>
       </header>
 
@@ -457,6 +527,11 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* ── Donate ── */}
+      <div className="app-main" style={{ paddingTop: 0 }}>
+        <DonateSection t={t} />
+      </div>
 
       <footer className="app-footer">{t.footer}</footer>
     </div>
