@@ -488,7 +488,11 @@ export default function App() {
         )}
       </main>
 
-      <footer className="app-footer">{t.footer}</footer>
+      <footer className="app-footer">
+        {t.footer}
+        <span className="footer-sep">·</span>
+        <a href="/privacy.html" className="footer-link">Privacy Policy</a>
+      </footer>
     </div>
   )
 }

@@ -839,7 +839,11 @@ body {
   font-size: .78rem;
   border-top: 1px solid var(--card-border);
   background: var(--card-bg);
+  display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
 }
+.footer-sep { opacity: .4; }
+.footer-link { color: var(--accent); text-decoration: none; }
+.footer-link:hover { text-decoration: underline; }
 
 /* ============================================================
    Responsive
