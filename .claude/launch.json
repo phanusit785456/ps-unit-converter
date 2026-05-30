@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "unit-converter",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "D:\\_CLAUDE\\1_Unit Convertor\\dev.cmd"],
+      "port": 5173
+    }
+  ]
+}

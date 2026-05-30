@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($env:PATH = \"C:\\\\Program Files\\\\nodejs;\" + $env:PATH; cd \"D:\\\\_CLAUDE\\\\1_Unit Convertor\"; npm install)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}
