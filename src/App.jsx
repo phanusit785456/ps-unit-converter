@@ -64,46 +64,6 @@ function LangDropdown({ lang, setLang }) {
   )
 }
 
-// ── Donate Section ────────────────────────────────────────────────
-function DonateSection({ t }) {
-  return (
-    <div className="section-card donate-card">
-      <h2 className="section-title">{t.donateTitle}</h2>
-      <p className="donate-desc">{t.donateDesc}</p>
-      <div className="donate-buttons">
-        <a
-          href="https://ko-fi.com/YOUR_KOFI_USERNAME"
-          target="_blank" rel="noopener noreferrer"
-          className="donate-btn kofi-btn"
-        >
-          ☕ {t.donateKofi}
-        </a>
-        <a
-          href="https://www.buymeacoffee.com/YOUR_BMC_USERNAME"
-          target="_blank" rel="noopener noreferrer"
-          className="donate-btn bmc-btn"
-        >
-          🧋 {t.donateBmc}
-        </a>
-      </div>
-      <div className="promptpay-box">
-        <p className="promptpay-label">{t.donatePromptpay}</p>
-        <div className="promptpay-qr-wrap">
-          {/* Replace qr-placeholder.png with your real PromptPay QR image */}
-          <div className="promptpay-qr-placeholder">
-            <span>📷</span>
-            <small>Add your QR image here</small>
-          </div>
-          <div className="promptpay-info">
-            <span className="promptpay-number">0xx-xxx-xxxx</span>
-            <small className="promptpay-hint">{t.donatePromptpayNum}</small>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ── Cooldown Modal ────────────────────────────────────────────────
 function CooldownModal({ cooldownUntil, onDismiss, t }) {
   const [timeLeft, setTimeLeft] = useState(() => Math.max(0, cooldownUntil - Date.now()))
@@ -527,11 +487,6 @@ export default function App() {
           </div>
         )}
       </main>
-
-      {/* ── Donate ── */}
-      <div className="app-main" style={{ paddingTop: 0 }}>
-        <DonateSection t={t} />
-      </div>
 
       <footer className="app-footer">{t.footer}</footer>
     </div>
