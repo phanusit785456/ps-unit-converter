@@ -368,7 +368,7 @@ body {
 .clear-btn {
   background: var(--danger-light);
   color: var(--danger);
-  border-color: #fca5a5;
+  border-color: rgba(239,68,68,.45);
 }
 .clear-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
@@ -376,8 +376,8 @@ body {
   flex: 1;
   justify-content: center;
   background: var(--success-light);
-  color: #16a34a;
-  border-color: #86efac;
+  color: var(--success);
+  border-color: rgba(34,197,94,.45);
 }
 .copy-btn:hover:not(:disabled) { background: var(--success); color: #fff; border-color: var(--success); }
 .copy-btn:disabled { opacity: .45; cursor: not-allowed; }
@@ -395,18 +395,6 @@ body {
   background: var(--warning-light);
   border-color: var(--warning);
 }
-
-/* ── Currency note ── */
-.currency-note {
-  margin-top: 12px;
-  padding: 9px 13px;
-  background: var(--warning-light);
-  border: 1px solid rgba(245,158,11,.4);
-  border-radius: var(--radius-sm);
-  font-size: .78rem;
-  color: #92400e;
-}
-:root.dark .currency-note { color: #fbbf24; }
 
 /* ============================================================
    Section Cards (Favorites & History)
