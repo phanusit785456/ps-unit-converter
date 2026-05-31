@@ -185,21 +185,18 @@ body {
 .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 /* ============================================================
-   Category Tabs
+   Category Tabs — wrap to 2 rows, stretch to fill
    ============================================================ */
 .category-tabs {
   display: flex;
+  flex-wrap: wrap;    /* wrap instead of horizontal scroll */
   gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
 }
-.category-tabs::-webkit-scrollbar { display: none; }
 
 .cat-tab {
-  flex-shrink: 0;
+  flex: 1 1 70px;     /* grow/shrink, base 70px → fills row evenly */
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 9px 14px;
+  padding: 9px 10px;
   border: 1.5px solid var(--card-border);
   border-radius: var(--radius-sm);
   background: var(--card-bg);
@@ -210,6 +207,7 @@ body {
   font-size: .8rem;
   font-weight: 500;
   min-width: 60px;
+  max-width: 120px;   /* prevent over-stretching on wide screens */
 }
 .cat-tab:hover {
   border-color: var(--accent);
@@ -544,7 +542,9 @@ body {
 .lang-chevron.open { transform: rotate(180deg); }
 
 .lang-menu {
-  position: absolute; top: calc(100% + 6px); left: 0;
+  position: absolute; top: calc(100% + 6px);
+  right: 0;       /* align to right edge — prevents overflow on right side */
+  left: auto;
   z-index: 500;
   background: var(--card-bg);
   border: 1.5px solid var(--card-border);
