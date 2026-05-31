@@ -50,15 +50,6 @@ export const VolumeIcon = ({ size }) => (
   </Svg>
 )
 
-export const CurrencyIcon = ({ size }) => (
-  <Svg size={size}>
-    <circle cx="12" cy="12" r="9"/>
-    <path d="M14.5 9.5c-1-1.5-5-1-5 1.5s5 2 5 4.5-4 3-5.5 1.5"/>
-    <line x1="12" y1="6.5" x2="12" y2="8.5"/>
-    <line x1="12" y1="15.5" x2="12" y2="17.5"/>
-  </Svg>
-)
-
 export const StorageIcon = ({ size }) => (
   <Svg size={size}>
     <rect x="2" y="5" width="20" height="6" rx="2"/>
@@ -111,6 +102,15 @@ export const ResistanceIcon = ({ size }) => (
     <line x1="2" y1="12" x2="5" y2="12"/>
     <path d="M5 12l1.5-3 2 6 2-6 2 6 2-6 1.5 3"/>
     <line x1="17" y1="12" x2="22" y2="12"/>
+  </Svg>
+)
+
+export const MomentIcon = ({ size }) => (
+  <Svg size={size}>
+    <path d="M12 5a7 7 0 1 0 7 7"/>
+    <polyline points="16 3 19 5 16 7"/>
+    <line x1="12" y1="12" x2="17" y2="9"/>
+    <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>
   </Svg>
 )
 

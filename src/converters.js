@@ -7,19 +7,18 @@ export const CATEGORIES = [
   { id: 'energy',          label: 'Energy'         },
   { id: 'pressure',        label: 'Pressure'       },
   { id: 'force',           label: 'Force'          },
+  { id: 'moment',          label: 'Moment'         },
   { id: 'voltage',         label: 'Voltage'        },
   { id: 'current',         label: 'Current'        },
   { id: 'resistance',      label: 'Resistance'     },
-  { id: 'currency',        label: 'Currency'       },
 ]
 
 export const CATEGORY_GROUPS = {
-  all:         ['favorites','temperature','weight','length','volume','digital_storage','energy','pressure','force','voltage','current','resistance','currency'],
+  all:         ['favorites','temperature','weight','length','volume','digital_storage','energy','pressure','force','moment','voltage','current','resistance'],
   measurement: ['favorites','temperature','weight','length','volume'],
   electrical:  ['favorites','voltage','current','resistance'],
-  physics:     ['favorites','energy','pressure','force'],
+  physics:     ['favorites','energy','pressure','force','moment'],
   digital:     ['favorites','digital_storage'],
-  finance:     ['favorites','currency'],
 }
 
 export const UNITS = {
@@ -82,11 +81,22 @@ export const UNITS = {
     { id: 'mmhg', label: 'mmHg (Torr)',       symbol: 'mmHg',abbr: 'mmHg'},
   ],
   force: [
-    { id: 'n',    label: 'Newton (N)',          symbol: 'N',   abbr: 'N'   },
-    { id: 'kn',   label: 'Kilonewton (kN)',     symbol: 'kN',  abbr: 'kN'  },
-    { id: 'lbf',  label: 'Pound-force (lbf)',   symbol: 'lbf', abbr: 'lbf' },
-    { id: 'dyne', label: 'Dyne',                symbol: 'dyn', abbr: 'dyn' },
-    { id: 'kgf',  label: 'Kilogram-force (kgf)',symbol: 'kgf', abbr: 'kgf' },
+    { id: 'n',    label: 'Newton (N)',           symbol: 'N',   abbr: 'N'   },
+    { id: 'kn',   label: 'Kilonewton (kN)',      symbol: 'kN',  abbr: 'kN'  },
+    { id: 'kgf',  label: 'Kilogram-force (kgf)', symbol: 'kgf', abbr: 'kgf' },
+    { id: 'tf',   label: 'Tonne-force (tf)',      symbol: 'tf',  abbr: 'tf'  },
+    { id: 'lbf',  label: 'Pound-force (lbf)',    symbol: 'lbf', abbr: 'lbf' },
+    { id: 'dyne', label: 'Dyne',                 symbol: 'dyn', abbr: 'dyn' },
+  ],
+  moment: [
+    { id: 'nm',    label: 'Newton·meter (N·m)',        symbol: 'N·m',    abbr: 'N·m'    },
+    { id: 'knm',   label: 'Kilonewton·meter (kN·m)',   symbol: 'kN·m',   abbr: 'kN·m'   },
+    { id: 'knmm',  label: 'Kilonewton·mm (kN·mm)',     symbol: 'kN·mm',  abbr: 'kN·mm'  },
+    { id: 'kgfm',  label: 'kgf·meter (kgf·m)',         symbol: 'kgf·m',  abbr: 'kgf·m'  },
+    { id: 'tfm',   label: 'Tonne-force·m (tf·m)',      symbol: 'tf·m',   abbr: 'tf·m'   },
+    { id: 'lbft',  label: 'Pound-force·ft (lb·ft)',    symbol: 'lb·ft',  abbr: 'lb·ft'  },
+    { id: 'lbin',  label: 'Pound-force·in (lb·in)',    symbol: 'lb·in',  abbr: 'lb·in'  },
+    { id: 'kipft', label: 'Kip·ft (kip·ft)',           symbol: 'kip·ft', abbr: 'kip·ft' },
   ],
   voltage: [
     { id: 'v',     label: 'Volt (V)',     symbol: 'V',  abbr: 'V'  },
@@ -107,23 +117,12 @@ export const UNITS = {
     { id: 'megaohm', label: 'Megaohm (MΩ)',symbol: 'MΩ', abbr: 'MΩ' },
     { id: 'gohm',    label: 'Gigaohm (GΩ)',symbol: 'GΩ', abbr: 'GΩ' },
   ],
-  currency: [
-    { id: 'usd', label: 'US Dollar (USD)',         symbol: '$',  abbr: 'USD' },
-    { id: 'thb', label: 'Thai Baht (THB)',         symbol: '฿',  abbr: 'THB' },
-    { id: 'eur', label: 'Euro (EUR)',              symbol: '€',  abbr: 'EUR' },
-    { id: 'gbp', label: 'British Pound (GBP)',     symbol: '£',  abbr: 'GBP' },
-    { id: 'jpy', label: 'Japanese Yen (JPY)',      symbol: '¥',  abbr: 'JPY' },
-    { id: 'sgd', label: 'Singapore Dollar (SGD)', symbol: 'S$', abbr: 'SGD' },
-    { id: 'cny', label: 'Chinese Yuan (CNY)',      symbol: '¥',  abbr: 'CNY' },
-    { id: 'aud', label: 'Australian Dollar (AUD)',symbol: 'A$', abbr: 'AUD' },
-  ],
 }
 
 const TO_BASE = {
   weight:  { kg: 1000, lb: 453.59237, oz: 28.349523, g: 1, ton: 1_000_000 },
   length:  { m: 1, km: 1000, mile: 1609.344, inch: 0.0254, cm: 0.01, ft: 0.3048, mm: 0.001, yard: 0.9144 },
   volume:  { l: 1000, ml: 1, gallon: 3785.41178, cup: 236.5882, fl_oz: 29.57353, tbsp: 14.78677, tsp: 4.92892, m3: 1_000_000 },
-  currency:{ usd: 1, thb: 33.5, eur: 0.92, gbp: 0.79, jpy: 149.5, sgd: 1.34, cny: 7.24, aud: 1.53 },
 
   // base: byte (binary, 1 KB = 1024 B)
   digital_storage: {
@@ -158,9 +157,21 @@ const TO_BASE = {
   force: {
     n: 1,
     kn: 1_000,
+    kgf: 9.80665,
+    tf: 9_806.65,      // 1 tf = 1000 kgf = 9806.65 N
     lbf: 4.44822,
     dyne: 1e-5,
-    kgf: 9.80665,
+  },
+  // base: newton·meter (N·m)
+  moment: {
+    nm:    1,
+    knm:   1_000,
+    knmm:  1,          // 1 kN·mm = 1000 N × 0.001 m = 1 N·m
+    kgfm:  9.80665,
+    tfm:   9_806.65,   // 1 tf·m = 1000 kgf·m = 9806.65 N·m
+    lbft:  1.355818,
+    lbin:  0.112985,
+    kipft: 1_355.818,  // 1 kip·ft = 1000 lbf·ft
   },
   // base: volt
   voltage: { v: 1, mv: 0.001, kv: 1_000, megav: 1_000_000 },

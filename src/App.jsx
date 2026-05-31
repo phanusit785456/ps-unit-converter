@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { CATEGORIES, UNITS, CATEGORY_GROUPS, convert, formatResult, getFormula, getUnitAbbr } from './converters'
 import { LANGS, TRANSLATIONS } from './translations'
 import {
-  TempIcon, WeightIcon, LengthIcon, VolumeIcon, CurrencyIcon,
-  StorageIcon, EnergyIcon, PressureIcon, ForceIcon,
+  TempIcon, WeightIcon, LengthIcon, VolumeIcon,
+  StorageIcon, EnergyIcon, PressureIcon, ForceIcon, MomentIcon,
   VoltageIcon, CurrentIcon, ResistanceIcon, StarIcon,
 } from './Icons'
 import AdBanner from './AdBanner'
@@ -17,8 +17,8 @@ const COOLDOWN_MS   = 60_000
 const DEFAULT_TAB_ORDER = [
   'favorites',
   'temperature','weight','length','volume',
-  'digital_storage','energy','pressure','force',
-  'voltage','current','resistance','currency',
+  'digital_storage','energy','pressure','force','moment',
+  'voltage','current','resistance',
 ]
 
 const TAB_META = {
@@ -26,11 +26,11 @@ const TAB_META = {
   weight:          { Icon: WeightIcon     },
   length:          { Icon: LengthIcon     },
   volume:          { Icon: VolumeIcon     },
-  currency:        { Icon: CurrencyIcon   },
   digital_storage: { Icon: StorageIcon    },
   energy:          { Icon: EnergyIcon     },
   pressure:        { Icon: PressureIcon   },
   force:           { Icon: ForceIcon      },
+  moment:          { Icon: MomentIcon     },
   voltage:         { Icon: VoltageIcon    },
   current:         { Icon: CurrentIcon    },
   resistance:      { Icon: ResistanceIcon },
@@ -43,7 +43,6 @@ const FILTER_GROUPS = [
   { id: 'electrical',  labelKey: 'filterElectrical'  },
   { id: 'physics',     labelKey: 'filterPhysics'     },
   { id: 'digital',     labelKey: 'filterDigital'     },
-  { id: 'finance',     labelKey: 'filterFinance'     },
 ]
 
 function loadStorage(key, fallback) {
@@ -186,7 +185,8 @@ export default function App() {
   const [tabOrder, setTabOrder] = useState(() => {
     try {
       const s = JSON.parse(localStorage.getItem('uc_tab_order'))
-      if (Array.isArray(s) && s.length === DEFAULT_TAB_ORDER.length) return s
+      const validIds = new Set(DEFAULT_TAB_ORDER)
+      if (Array.isArray(s) && s.length === DEFAULT_TAB_ORDER.length && s.every(id => validIds.has(id))) return s
     } catch {}
     return DEFAULT_TAB_ORDER
   })
@@ -477,9 +477,6 @@ export default function App() {
               </button>
             </div>
 
-            {category === 'currency' && (
-              <p className="currency-note">{t.currencyNote}</p>
-            )}
           </div>
         )}
 
