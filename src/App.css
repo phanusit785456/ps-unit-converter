@@ -50,6 +50,7 @@
    Reset & Base
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button { color: inherit; font-family: inherit; }
 
 html { scroll-behavior: smooth; }
 
@@ -452,6 +453,7 @@ body {
   border: 1px solid var(--card-border);
   border-radius: var(--radius-sm);
   background: var(--bg);
+  color: var(--text-primary);
   cursor: pointer;
   transition: all .2s;
   text-align: left;
@@ -459,7 +461,7 @@ body {
 }
 .history-item:hover { border-color: var(--accent); background: var(--accent-light); }
 
-.hist-icon  { font-size: .95rem; flex-shrink: 0; }
+.hist-icon  { font-size: .95rem; flex-shrink: 0; color: var(--text-muted); }
 .hist-from  { color: var(--text-primary); font-weight: 600; }
 .hist-arrow { color: var(--text-muted); flex-shrink: 0; margin: 0 2px; }
 .hist-to    { color: var(--teal); font-weight: 700; margin-left: auto; }
@@ -694,11 +696,12 @@ body {
   display: flex; align-items: center; gap: 10px;
   padding: 12px 10px;
   background: var(--bg);
+  color: var(--text-secondary);
   cursor: pointer; text-align: left;
-  transition: background .2s;
+  transition: background .2s, color .2s;
   min-width: 0;
 }
-.fav-card-main:hover { background: var(--accent-light); }
+.fav-card-main:hover { background: var(--accent-light); color: var(--accent); }
 
 .fav-card-icon { font-size: 1.4rem; flex-shrink: 0; }
 
