@@ -355,6 +355,7 @@ export default function App() {
         </div>
       </header>
 
+      <div className="page-layout">
       <main className="app-main">
         {/* ── Filter bar ── */}
         <div className="filter-bar" role="toolbar" aria-label="Filter categories">
@@ -393,9 +394,6 @@ export default function App() {
             )
           })}
         </div>
-
-        {/* ── Ad Banner ── */}
-        <AdBanner slot="1111111111" className="ad-leaderboard" />
 
         {/* ── Main content ── */}
         {category === 'favorites' ? (
@@ -484,9 +482,6 @@ export default function App() {
           </div>
         )}
 
-        {/* ── Ad Banner ── */}
-        <AdBanner slot="2222222222" className="ad-rectangle" />
-
         {/* ── History ── */}
         {history.length > 0 && (
           <div className="section-card">
@@ -515,6 +510,17 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* ── Right Sidebar Ad ── */}
+      <aside className="ad-sidebar">
+        <AdBanner slot="3333333333" className="ad-sidebar-unit" />
+      </aside>
+      </div>{/* end page-layout */}
+
+      {/* ── Bottom Ad ── */}
+      <div className="ad-bottom-wrap">
+        <AdBanner slot="4444444444" className="ad-bottom-unit" />
+      </div>
 
       <footer className="app-footer">
         {t.footer}
