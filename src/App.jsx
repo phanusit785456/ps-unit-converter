@@ -15,9 +15,10 @@ const CONV_LIMIT    = 5
 const COOLDOWN_MS   = 60_000
 
 const DEFAULT_TAB_ORDER = [
+  'favorites',
   'temperature','weight','length','volume',
   'digital_storage','energy','pressure','force',
-  'voltage','current','resistance','currency','favorites',
+  'voltage','current','resistance','currency',
 ]
 
 const TAB_META = {
@@ -511,10 +512,6 @@ export default function App() {
         )}
       </main>
 
-      {/* ── Right Sidebar Ad ── */}
-      <aside className="ad-sidebar">
-        <AdBanner slot="3333333333" className="ad-sidebar-unit" />
-      </aside>
       </div>{/* end page-layout */}
 
       {/* ── Bottom Ad ── */}

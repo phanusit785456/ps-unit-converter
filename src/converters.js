@@ -14,12 +14,12 @@ export const CATEGORIES = [
 ]
 
 export const CATEGORY_GROUPS = {
-  all:         ['temperature','weight','length','volume','digital_storage','energy','pressure','force','voltage','current','resistance','currency','favorites'],
-  measurement: ['temperature','weight','length','volume'],
-  electrical:  ['voltage','current','resistance'],
-  physics:     ['energy','pressure','force'],
-  digital:     ['digital_storage'],
-  finance:     ['currency'],
+  all:         ['favorites','temperature','weight','length','volume','digital_storage','energy','pressure','force','voltage','current','resistance','currency'],
+  measurement: ['favorites','temperature','weight','length','volume'],
+  electrical:  ['favorites','voltage','current','resistance'],
+  physics:     ['favorites','energy','pressure','force'],
+  digital:     ['favorites','digital_storage'],
+  finance:     ['favorites','currency'],
 }
 
 export const UNITS = {

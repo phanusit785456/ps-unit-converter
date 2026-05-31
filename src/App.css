@@ -108,39 +108,20 @@ body {
 }
 .theme-toggle:hover { transform: rotate(25deg) scale(1.1); border-color: var(--accent); }
 
-/* ── Page layout: center column + right sidebar ── */
+/* ── Page layout: centered single column ── */
 .page-layout {
-  display: flex;
-  align-items: flex-start;
-  max-width: 1060px;
+  max-width: 700px;
   width: 100%;
   margin: 0 auto;
 }
 
 /* ── Main ── */
 .app-main {
-  flex: 1;
-  min-width: 0;
-  max-width: 660px;
+  width: 100%;
   padding: 24px 16px 32px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-}
-
-/* ── Right Sidebar Ad ── */
-.ad-sidebar {
-  width: 300px;
-  flex-shrink: 0;
-  padding: 24px 12px;
-  position: sticky;
-  top: 80px;
-  align-self: flex-start;
-}
-
-.ad-sidebar-unit {
-  width: 100%;
-  min-height: 250px;
 }
 
 /* ── Bottom Ad ── */
